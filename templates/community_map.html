@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+{% block title %}Community Map | NagarSetu{% endblock %}
+{% block head %}
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+{% endblock %}
+{% block content %}
+<section class="page-head">
+  <div>
+    <p class="eyebrow">Map-based community dashboard</p>
+    <h1>Community issue map</h1>
+  </div>
+</section>
+
+<section class="community-map-layout">
+  <aside class="community-filters">
+    <label>Search Area
+      <input type="search" data-community-search placeholder="Area or location">
+    </label>
+    <label>Category
+      <select data-community-category>
+        <option>All</option>
+        {% for category in categories %}
+          <option>{{ category }}</option>
+        {% endfor %}
+      </select>
+    </label>
+    <label>Status
+      <select data-community-status>
+        <option>All</option>
+        <option>Pending</option>
+        <option>In Progress</option>
+        <option>Resolved</option>
+      </select>
+    </label>
+    <label>Priority
+      <select data-community-priority>
+        <option>All</option>
+        <option>Low</option>
+        <option>Medium</option>
+        <option>High</option>
+        <option>Critical</option>
+      </select>
+    </label>
+    <label>Distance
+      <select data-community-distance>
+        <option value="">Any distance</option>
+        <option value="1">Within 1 km</option>
+        <option value="3">Within 3 km</option>
+        <option value="5">Within 5 km</option>
+      </select>
+    </label>
+    <button class="btn primary full" type="button" data-use-current-area>Use Map Center</button>
+
+    <h2>Trending in Area</h2>
+    <div class="trend-list">
+      {% for issue in trending %}
+        <a href="{{ url_for('issue_detail', issue_id=issue.id) }}">
+          <strong>{{ issue.display_category }}</strong>
+          <span>{{ issue.repost_count }} reposts · {{ issue.verification_count }} verifications</span>
+        </a>
+      {% else %}
+        <p class="empty">No trending complaints yet.</p>
+      {% endfor %}
+    </div>
+
+    <h2>Hotspot Areas</h2>
+    <div class="heat-list">
+      {% for area, count in hotspots %}
+        <div><span>{{ area }}</span><strong style="width: {{ [count * 18, 100]|min }}%">{{ count }}</strong></div>
+      {% else %}
+        <p class="empty">No hotspot data yet.</p>
+      {% endfor %}
+    </div>
+  </aside>
+  <div>
+    <div id="communityMap" data-community-issues='{{ issues|tojson }}'></div>
+    <div class="map-legend">
+      <span><i class="legend pending"></i>Pending</span>
+      <span><i class="legend progress"></i>In Progress</span>
+      <span><i class="legend resolved"></i>Resolved</span>
+      <span><i class="legend critical"></i>Escalated</span>
+    </div>
+  </div>
+</section>
+{% endblock %}
+{% block scripts %}
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+{% endblock %}

@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="hero">
+  <div class="hero-copy">
+    <p class="eyebrow">Crowdsourced civic accountability</p>
+    <h1>NagarSetu - Smart Citizen Issue Reporting System</h1>
+    <p class="tagline">Connecting Citizens and Authorities for a Cleaner, Safer City</p>
+    <p class="hero-text">Report public issues, rally community support, and help municipal teams resolve civic problems with transparent progress tracking.</p>
+    <div class="hero-actions">
+      <a class="btn primary" href="{{ url_for('report_issue') }}">Report Issue</a>
+      <a class="btn ghost" href="{{ url_for('community_map') }}">View Community Map</a>
+    </div>
+  </div>
+  <div class="hero-panel">
+    <div class="city-card">
+      <span class="status-dot"></span>
+      <strong>{{ stats.total }}</strong>
+      <span>complaints tracked</span>
+    </div>
+    <div class="city-card">
+      <span class="status-dot green"></span>
+      <strong>{{ stats.resolved }}</strong>
+      <span>resolved publicly</span>
+    </div>
+    <div class="city-card">
+      <span class="status-dot orange"></span>
+      <strong>{{ stats.supported }}</strong>
+      <span>community verifications</span>
+    </div>
+  </div>
+</section>
+
+<section class="feature-grid">
+  <article>
+    <h2>Community Verification</h2>
+    <p>Citizens can support issues they also face, helping authorities prioritize complaints with real public impact.</p>
+  </article>
+  <article>
+    <h2>Escalation Alerts</h2>
+    <p>Pending complaints are marked as Needs Attention after 3 days and Critical Delay after 7 days.</p>
+  </article>
+  <article>
+    <h2>Before and After Proof</h2>
+    <p>Resolution images sit beside original reports so everyone can verify the work was completed.</p>
+  </article>
+</section>
+
+<a class="floating-report" href="{{ url_for('report_issue') }}">+ Report Issue</a>
+{% endblock %}

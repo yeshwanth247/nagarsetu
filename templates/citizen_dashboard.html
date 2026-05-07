@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block title %}Citizen Dashboard | NagarSetu{% endblock %}
+{% block content %}
+<section class="page-head">
+  <div>
+    <p class="eyebrow">Citizen dashboard</p>
+    <h1>Track, report, and support civic issues</h1>
+  </div>
+  <a class="btn primary" href="{{ url_for('report_issue') }}">Report New Issue</a>
+</section>
+
+<section class="two-column">
+  <div>
+    <h2>My Complaints</h2>
+    <div class="issue-list compact">
+      {% for issue in my_issues %}
+        {% include "partials/issue_card.html" %}
+      {% else %}
+        <p class="empty">You have not reported any issues yet.</p>
+      {% endfor %}
+    </div>
+  </div>
+  <div>
+    <h2>Current Issues</h2>
+    <div class="issue-list compact">
+      {% for issue in active %}
+        {% include "partials/issue_card.html" %}
+      {% else %}
+        <p class="empty">No active issues right now.</p>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endblock %}

@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block title %}Current Issues | NagarSetu{% endblock %}
+{% block content %}
+<section class="page-head">
+  <div>
+    <p class="eyebrow">Public issue board</p>
+    <h1>Current civic issues</h1>
+  </div>
+  <div class="filters">
+    {% for item in ["All", "Pending", "In Progress", "Resolved", "Escalated"] %}
+      <a class="{% if selected_filter == item %}active{% endif %}" href="{{ url_for('issues', filter=item) }}">{{ item }}</a>
+    {% endfor %}
+  </div>
+</section>
+
+{% if top_verified %}
+<section class="highlight-band">
+  <h2>Top verified complaints</h2>
+  <div class="issue-grid mini-grid">
+    {% for issue in top_verified %}
+      {% include "partials/issue_card.html" %}
+    {% endfor %}
+  </div>
+</section>
+{% endif %}
+
+<section class="issue-grid">
+  {% for issue in issues %}
+    {% include "partials/issue_card.html" %}
+  {% else %}
+    <p class="empty">No issues match this filter.</p>
+  {% endfor %}
+</section>
+{% endblock %}

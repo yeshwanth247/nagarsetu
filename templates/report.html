@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+{% block title %}Report Issue | NagarSetu{% endblock %}
+{% block head %}
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+{% endblock %}
+{% block content %}
+<section class="form-page">
+  <div>
+    <p class="eyebrow">New complaint</p>
+    <h1>Report a civic issue</h1>
+    <p>Click the map to capture coordinates, auto-fill an address, and check whether a similar complaint already exists nearby.</p>
+    <div id="nearbyIssues" class="nearby-panel" hidden>
+      <strong>This issue may already be reported nearby.</strong>
+      <div data-nearby-list></div>
+    </div>
+  </div>
+  <form class="form-card wide" method="post" enctype="multipart/form-data">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <input type="hidden" name="latitude" data-latitude>
+    <input type="hidden" name="longitude" data-longitude>
+    <input type="hidden" name="duplicate_reference" data-duplicate-reference>
+    <input type="hidden" name="continue_new_report" data-continue-new-report value="0">
+    <label>Issue Description
+      <textarea name="description" rows="5" required></textarea>
+    </label>
+    <label>Location
+      <input type="text" name="location" data-location-input placeholder="Click map or enter street, landmark, ward" required>
+    </label>
+    <div class="map-picker">
+      <div id="reportMap"></div>
+      <p data-map-status>Click the map to select the complaint location.</p>
+    </div>
+    <label>Category
+      <select name="category" data-category-select required>
+        {% for category in categories %}
+          <option>{{ category }}</option>
+        {% endfor %}
+      </select>
+    </label>
+    <label data-custom-category hidden>Custom Category
+      <input type="text" name="custom_category" placeholder="Describe the issue category">
+    </label>
+    <label>Before Image
+      <input type="file" name="before_image" accept="image/*">
+    </label>
+    <button class="btn primary" type="submit">Submit Complaint</button>
+  </form>
+</section>
+<div class="duplicate-modal" data-duplicate-modal hidden>
+  <div>
+    <h2>A similar issue already exists nearby.</h2>
+    <p>Support the existing complaint to raise its community priority, or continue with a new report if this is a different problem.</p>
+    <div data-duplicate-candidates></div>
+    <div class="split-actions">
+      <button class="btn primary" type="button" data-continue-report>Continue New Report</button>
+      <button class="btn ghost" type="button" data-close-duplicate>Review Nearby Issues</button>
+    </div>
+  </div>
+</div>
+{% endblock %}
+{% block scripts %}
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+{% endblock %}

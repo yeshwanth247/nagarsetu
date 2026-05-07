@@ -1,0 +1,36 @@
+<article class="issue-card {{ issue.alert.level }}">
+  <div class="issue-image">
+    {% if issue.before_image %}
+      <img src="{{ url_for('static', filename='uploads/' ~ issue.before_image) }}" alt="{{ issue.category }}">
+    {% else %}
+      <span>No image</span>
+    {% endif %}
+  </div>
+  <div class="issue-body">
+    <div class="card-top">
+      <span class="badge {{ issue.alert.level }}">{{ issue.alert.label }}</span>
+      {% if issue.verified %}
+        <span class="badge verified">Verified</span>
+      {% endif %}
+      <span>{{ issue.alert.days }}d</span>
+    </div>
+    <h3>{{ issue.display_category }}</h3>
+    <p>{{ issue.description }}</p>
+    <div class="card-meta">
+      <span>{{ issue.location }}</span>
+      <span>{{ issue.status }}</span>
+      <span>{{ issue.verification_count }} verifications</span>
+      <span>{{ issue.repost_count }} reposts</span>
+      <span>{{ issue.complaint_priority }} priority</span>
+    </div>
+    <div class="card-actions">
+      <a class="text-link" href="{{ url_for('issue_detail', issue_id=issue.id) }}">View Details</a>
+      {% if current_user and current_user.role == 'citizen' and issue.status != 'Resolved' %}
+        <form method="post" action="{{ url_for('support_issue', issue_id=issue.id) }}">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+          <button type="submit" class="mini-button">Repost This Issue</button>
+        </form>
+      {% endif %}
+    </div>
+  </div>
+</article>

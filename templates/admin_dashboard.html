@@ -1,0 +1,107 @@
+{% extends "base.html" %}
+{% block title %}Admin Dashboard | NagarSetu{% endblock %}
+{% block head %}
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+{% endblock %}
+{% block content %}
+<section class="page-head">
+  <div>
+    <p class="eyebrow">Municipal authority</p>
+    <h1>Admin dashboard</h1>
+  </div>
+</section>
+
+<section class="stats-grid">
+  <div><span class="stat-icon">⌂</span><strong>{{ stats.total }}</strong><span>Total complaints</span></div>
+  <div><span class="stat-icon">!</span><strong>{{ stats.pending }}</strong><span>Pending</span></div>
+  <div><span class="stat-icon">✓</span><strong>{{ stats.resolved }}</strong><span>Resolved</span></div>
+  <div><span class="stat-icon">▲</span><strong>{{ stats.escalated }}</strong><span>Escalated</span></div>
+</section>
+
+<section class="admin-map-shell">
+  <div>
+    <h2>Complaint map</h2>
+    <div id="adminMap" data-map-issues='{{ map_issues|tojson }}'></div>
+  </div>
+  <div>
+    <h2>Admin alerts</h2>
+    <div class="alert-list">
+      {% for issue in escalated %}
+        <a href="{{ url_for('admin_issue', issue_id=issue.id) }}">
+          <strong>{{ issue.display_category }}</strong>
+          <span>{{ issue.location }} · {{ issue.alert.days }} days pending</span>
+        </a>
+      {% else %}
+        <p class="empty">No escalated complaints right now.</p>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<section class="two-column">
+  <div>
+    <h2>All Complaints</h2>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Issue</th>
+            <th>Status</th>
+            <th>Age</th>
+            <th>Verification</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for issue in issues %}
+            <tr class="{{ issue.alert.level }}">
+              <td>{{ issue.display_category }}<small>{{ issue.location }}</small></td>
+              <td>{{ issue.status }} <span class="badge {{ issue.alert.level }}">{{ issue.alert.label }}</span></td>
+              <td>{{ issue.alert.days }}d</td>
+              <td>{{ issue.verification_count }} / {{ issue.repost_count }} reposts / {{ issue.complaint_priority }}</td>
+              <td><a href="{{ url_for('admin_issue', issue_id=issue.id) }}">Manage</a></td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <div>
+    <h2>Most Verified</h2>
+    <div class="issue-list compact">
+      {% for issue in most_supported %}
+        {% include "partials/issue_card.html" %}
+      {% else %}
+        <p class="empty">No supported complaints yet.</p>
+      {% endfor %}
+    </div>
+    <h2>Area-wise Statistics</h2>
+    <div class="heat-list">
+      {% for area, count in area_stats %}
+        <div><span>{{ area }}</span><strong style="width: {{ [count * 18, 100]|min }}%">{{ count }}</strong></div>
+      {% else %}
+        <p class="empty">No area data yet.</p>
+      {% endfor %}
+    </div>
+    <h2>Most Reposted</h2>
+    <div class="issue-list compact">
+      {% for issue in most_reposted %}
+        {% include "partials/issue_card.html" %}
+      {% else %}
+        <p class="empty">No reposts yet.</p>
+      {% endfor %}
+    </div>
+    <h2>Frequently Repeated Issues</h2>
+    <div class="issue-list compact">
+      {% for issue in repeated %}
+        {% include "partials/issue_card.html" %}
+      {% else %}
+        <p class="empty">No duplicate patterns detected yet.</p>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endblock %}
+{% block scripts %}
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+{% endblock %}

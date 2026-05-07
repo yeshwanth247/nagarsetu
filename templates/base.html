@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="csrf-token" content="{{ csrf_token() }}">
+  <title>{% block title %}{{ app_name }}{% endblock %}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+  {% block head %}{% endblock %}
+</head>
+<body>
+  <nav class="topbar">
+    <a class="brand" href="{{ url_for('home') }}"><span class="brand-mark">N</span><span>NagarSetu</span></a>
+    <button class="nav-toggle" data-nav-toggle aria-label="Toggle navigation">Menu</button>
+    <div class="nav-links" data-nav-links>
+      <a href="{{ url_for('home') }}">Home</a>
+      <a href="{{ url_for('issues') }}">View Issues</a>
+      <a href="{{ url_for('community_map') }}">Community Map</a>
+      {% if current_user %}
+        {% if current_user.role == 'citizen' %}
+          <a href="{{ url_for('citizen_dashboard') }}">Citizen Dashboard</a>
+          <a href="{{ url_for('report_issue') }}">Report Issue</a>
+        {% else %}
+          <a href="{{ url_for('admin_dashboard') }}">Admin Dashboard</a>
+        {% endif %}
+        <a href="{{ url_for('logout') }}">Logout</a>
+      {% else %}
+        <a href="{{ url_for('auth') }}">Citizen Login</a>
+        <a href="{{ url_for('auth', role='admin') }}">Admin Login</a>
+      {% endif %}
+    </div>
+  </nav>
+
+  <main>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <div class="flash-wrap">
+          {% for category, message in messages %}
+            <div class="flash {{ category }}">{{ message }}</div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+    {% block content %}{% endblock %}
+  </main>
+
+  <footer class="site-footer">
+    <strong>NagarSetu</strong>
+    <span>Your Bridge to Better Cities</span>
+  </footer>
+
+  {% block scripts %}{% endblock %}
+  <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>

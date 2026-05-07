@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block title %}Login or Register | NagarSetu{% endblock %}
+{% block content %}
+<section class="auth-shell">
+  <div>
+    <p class="eyebrow">Secure access</p>
+    <h1>Login or create your NagarSetu account</h1>
+    <p>Citizens report and verify civic issues. Municipal admins manage complaints, upload resolution proof, and monitor delays.</p>
+  </div>
+  <form class="form-card" method="post">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <label>Email
+      <input type="email" name="email" required autocomplete="email">
+    </label>
+    <label>Password
+      <input type="password" name="password" required autocomplete="current-password">
+    </label>
+    <label>Role
+      <select name="role">
+        <option value="citizen">Citizen</option>
+        <option value="admin" {% if request.args.get('role') == 'admin' %}selected{% endif %}>Admin</option>
+      </select>
+    </label>
+    <div class="split-actions">
+      <button class="btn primary" type="submit" name="action" value="login">Login</button>
+      <button class="btn secondary" type="submit" name="action" value="register">Register</button>
+    </div>
+  </form>
+</section>
+{% endblock %}

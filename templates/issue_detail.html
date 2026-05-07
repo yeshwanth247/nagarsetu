@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+{% block title %}Issue Details | NagarSetu{% endblock %}
+{% block content %}
+<section class="detail-grid">
+  <article class="detail-main">
+    <div class="detail-title">
+      <span class="badge {{ issue.alert.level }}">{{ issue.alert.label }}</span>
+      {% if issue.verified %}<span class="badge verified">Verified by community</span>{% endif %}
+      <h1>{{ issue.display_category }}</h1>
+      <p>{{ issue.description }}</p>
+    </div>
+    <div class="meta-grid">
+      <span><strong>Location</strong>{{ issue.location }}</span>
+      <span><strong>Status</strong>{{ issue.status }}</span>
+      <span><strong>Reported</strong>{{ issue.alert.days }} day{{ '' if issue.alert.days == 1 else 's' }} ago</span>
+      <span><strong>Verification</strong>{{ issue.verification_count }} / {{ verified_threshold }}</span>
+      <span><strong>Reposts</strong>{{ issue.repost_count }}</span>
+      <span><strong>Priority</strong>{{ issue.complaint_priority }}</span>
+    </div>
+
+    <div class="comparison">
+      <figure>
+        <figcaption>Before</figcaption>
+        {% if issue.before_image %}
+          <img class="previewable" src="{{ url_for('static', filename='uploads/' ~ issue.before_image) }}" alt="Before issue">
+        {% else %}
+          <div class="image-placeholder">No before image</div>
+        {% endif %}
+      </figure>
+      <figure>
+        <figcaption>After Resolution</figcaption>
+        {% if resolution_images %}
+          <div class="resolution-strip">
+            {% for image in resolution_images %}
+              <img class="previewable" src="{{ url_for('static', filename='uploads/' ~ image.filename) }}" alt="After resolution">
+            {% endfor %}
+          </div>
+          {% if issue.resolution_date %}<small>Resolution date: {{ issue.resolution_date[:10] }}</small>{% endif %}
+        {% elif issue.after_image %}
+          <img class="previewable" src="{{ url_for('static', filename='uploads/' ~ issue.after_image) }}" alt="After resolution">
+          {% if issue.resolution_date %}<small>Resolution date: {{ issue.resolution_date[:10] }}</small>{% endif %}
+        {% else %}
+          <div class="image-placeholder">Awaiting resolution proof</div>
+        {% endif %}
+      </figure>
+    </div>
+  </article>
+
+  <aside class="side-panel">
+    {% if current_user and current_user.role == 'citizen' %}
+      <form method="post" action="{{ url_for('support_issue', issue_id=issue.id) }}">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <button class="btn secondary full" type="submit" {% if supported %}disabled{% endif %}>
+          {% if supported %}Reposted{% else %}Repost This Issue{% endif %}
+        </button>
+      </form>
+      <form method="post" action="{{ url_for('verify_issue', issue_id=issue.id) }}">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <button class="btn primary full" type="submit" {% if verified %}disabled{% endif %}>
+          {% if verified %}Verified{% else %}Verify Issue{% endif %}
+        </button>
+      </form>
+    {% endif %}
+
+    {% if current_user and current_user.role == 'admin' %}
+      <form method="post" action="{{ url_for('admin_issue', issue_id=issue.id) }}" enctype="multipart/form-data">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <label>Status
+          <select name="status">
+            {% for status in ["Pending", "In Progress", "Resolved"] %}
+              <option {% if issue.status == status %}selected{% endif %}>{{ status }}</option>
+            {% endfor %}
+          </select>
+        </label>
+        <label>After Resolution Images
+          <input type="file" name="after_images" accept="image/*" multiple>
+        </label>
+        <button class="btn primary full" type="submit">Update Issue</button>
+      </form>
+    {% endif %}
+
+    <h2>Timeline</h2>
+    <ol class="timeline">
+      <li><strong>Complaint submitted</strong><span>{{ issue.created_at[:10] }}</span></li>
+      {% for update in updates %}
+        <li><strong>{{ update.message }}</strong><span>{{ update.created_at[:10] }} by {{ update.role }}</span></li>
+      {% endfor %}
+    </ol>
+  </aside>
+</section>
+<div class="image-modal" data-image-modal hidden>
+  <button type="button" data-modal-close aria-label="Close image preview">×</button>
+  <img alt="Preview">
+</div>
+{% endblock %}
